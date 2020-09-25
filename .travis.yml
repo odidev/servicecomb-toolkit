@@ -34,11 +34,26 @@ cache:
 language: java
 jdk:
 - openjdk8
+install:
+  - if [ "${TRAVIS_CPU_ARCH}" == "arm64" ]; then
+     sudo apt-get install openjdk-8-jdk maven;
+     export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-arm64;
+     export PATH=$JAVA_HOME/bin:$PATH;
+    fi
 jobs:
   include:
   - stage: Test
     script: ./scripts/test.sh
+  - stage: Test
+    arch: arm64
+    script: ./scripts/test.sh
   - stage: Cli Test
     script: ./scripts/cliTest.sh
+  - stage: Cli Test
+    arch: arm64
+    script: ./scripts/cliTest.sh
   - stage: Deploy on
+    script: if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then bash ./scripts/deploy.sh; fi
+  - stage: Deploy on
+    arch: arm64
     script: if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then bash ./scripts/deploy.sh; fi
